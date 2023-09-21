@@ -18,7 +18,4 @@ public interface OrderService {
 
     List<Order> getNewOrders();
 
-    StringBuilder getOrderInfoById(Long id);
-
-    StringBuilder getAllOrderInfo();
 }

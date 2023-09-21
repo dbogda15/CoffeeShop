@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -136,27 +135,5 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Order> getNewOrders() {
         return orderRepository.getOrdersByStatus(Status.NEW);
-    }
-
-    @Override
-    public StringBuilder getOrderInfoById(Long id) {
-        Order order = getById(id);
-        String status = "Текущий статус заказа № " + id + ": " + order.getStatus().toString();
-        StringBuilder message = new StringBuilder("События по заказу: ");
-        List<Report> reports = order.getReports();
-        for (Report report : reports) {
-            message.append("\n").append(report.getMessage()).append(". Время события: ").append(report.getLocalDateTime().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")));
-        }
-        return new StringBuilder(status).append("\n").append(message);
-    }
-
-    @Override
-    public StringBuilder getAllOrderInfo() {
-        List<Order> orders = getAll();
-        StringBuilder result = new StringBuilder("Список отчетов:");
-        for (Order order : orders){
-            result.append("\n").append(getOrderInfoById(order.getId()));
-        }
-        return result;
     }
 }

@@ -3,10 +3,8 @@ package me.dbogda.ufanettestcoffeeshop.service.impl;
 import me.dbogda.ufanettestcoffeeshop.exception.NonValidStatusException;
 import me.dbogda.ufanettestcoffeeshop.model.Order;
 import me.dbogda.ufanettestcoffeeshop.enums.ProductType;
-import me.dbogda.ufanettestcoffeeshop.model.Report;
 import me.dbogda.ufanettestcoffeeshop.enums.Status;
 import me.dbogda.ufanettestcoffeeshop.repository.OrderRepository;
-import me.dbogda.ufanettestcoffeeshop.service.ReportService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.webjars.NotFoundException;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -133,13 +130,8 @@ class OrderServiceImplTest {
     void getOrderInfo() {
         when(orderRepository.findById(CURRENT_ORDER.getId()))
                 .thenReturn(Optional.of(CURRENT_ORDER));
-        String status = "Текущий статус заказа № "  + CURRENT_ORDER.getId() + ": "+ CURRENT_ORDER.getStatus().toString();
-        StringBuilder result = new StringBuilder("События по заказу: ");
-        List<Report> reports = CURRENT_ORDER.getReports();
-        for (Report report : reports){
-            result.append("\n").append(report.getMessage()).append(". Время события: ").append(report.getLocalDateTime().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")));
-        }
-        assertEquals(status + "\n" + result, out.getOrderInfoById(CURRENT_ORDER.getId()).toString());
+
+        assertEquals(CURRENT_ORDER, out.getById(CURRENT_ORDER.getId()));
 
         verify(orderRepository, times(1)).findById(CURRENT_ORDER.getId());
     }

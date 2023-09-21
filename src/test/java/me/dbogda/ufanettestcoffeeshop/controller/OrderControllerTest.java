@@ -129,4 +129,18 @@ class OrderControllerTest {
 
         verify(orderService, times(1)).makeSomeActionWithOrder(1L, "Employee", Action.FINISH);
     }
+
+    @Test
+    @DisplayName("Получение информации о заказе")
+    void shouldReturnCorrectOrderById() throws Exception{
+        when(orderService.getById(1L)).thenReturn(NEW_ORDER);
+        mockMvc.perform(get("/order/id?id=1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("id").value(NEW_ORDER.getId()))
+                .andExpect(jsonPath("product").value(NEW_ORDER.getProduct().toString()))
+                .andExpect(jsonPath("customer").value(NEW_ORDER.getCustomer()))
+                .andExpect(jsonPath("status").value(NEW_ORDER.getStatus().toString()));
+
+        verify(orderService, times(1)).getById(1L);
+    }
 }

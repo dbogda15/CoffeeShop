@@ -46,18 +46,12 @@ public class OrderController {
     @Operation(
             summary = "Получить информацию о текущем статусе заказа и цепочке событий",
             description = "Введите ID заказа")
-    StringBuilder getInfoAboutOrderById(@RequestParam Long id) {
-        return orderService.getOrderInfoById(id);
-    }
-
-    @GetMapping("/all_info")
-    @Operation(summary = "Получить информацию о текущем статусе всех заказов и цепочке событий")
-    StringBuilder getInfoAboutAllOrder(){
-        return orderService.getAllOrderInfo();
+    Order getInfoAboutOrderById(@RequestParam Long id) {
+        return orderService.getById(id);
     }
 
     @GetMapping("/all")
-    @Operation(summary = "Получение списка всех заказов")
+    @Operation(summary = "Получить информацию о текущем статусе всех заказов и цепочке событий")
     List<Order> getAll() {
         return orderService.getAll();
     }

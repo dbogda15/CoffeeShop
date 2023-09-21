@@ -1,9 +1,9 @@
 package me.dbogda.ufanettestcoffeeshop.controller;
 
 import me.dbogda.ufanettestcoffeeshop.model.Order;
-import me.dbogda.ufanettestcoffeeshop.model.ProductType;
+import me.dbogda.ufanettestcoffeeshop.enums.ProductType;
 import me.dbogda.ufanettestcoffeeshop.model.Report;
-import me.dbogda.ufanettestcoffeeshop.model.Status;
+import me.dbogda.ufanettestcoffeeshop.enums.Status;
 import me.dbogda.ufanettestcoffeeshop.service.impl.ReportServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,7 @@ class ReportControllerTest {
     final Report REPORT = new Report(1L, ORDER, "Message", LocalDateTime.now());
 
     @Test
-    @DisplayName("")
+    @DisplayName("Получение списка отчетов по ID заказа")
     void getReportsByOrderId() throws Exception {
         when(reportService.getReportsByOrderId(1L)).thenReturn(List.of(REPORT));
         mockMvc.perform(get("/reports/id?orderId=1"))
@@ -49,7 +49,7 @@ class ReportControllerTest {
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Получение списка всех отчетов")
     void getAll() throws Exception {
         when(reportService.getAll()).thenReturn(List.of(REPORT));
         mockMvc.perform(get("/reports/all"))

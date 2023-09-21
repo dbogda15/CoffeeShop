@@ -31,7 +31,7 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public List<Report> getReportsByOrderId(Long id) {
         Optional<Order> optional = orderRepository.findById(id);
-        if(optional.isEmpty()){
+        if (optional.isEmpty()) {
             throw new NotFoundException("Отчёт с id = " + id + " не существует!");
         } else {
             return reportRepository.getAllByOrder(optional.get());

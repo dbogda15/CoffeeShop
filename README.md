@@ -11,10 +11,6 @@
 - получить отчёты (по заказу, по всем заказам)
 
 Для запуска программы поменяйте следующие параметры:
-- в *hibernate.cfg.xml* подставить свои значения в следующие свойства:
-    - connection.url - путь до базы данных
-    - connection.username - имя пользователя от БД
-    - connection.password - пароль от БД
 - изменить значение свойств в файле application.properties:
     - spring.datasource.url - путь до базы данных
     - spring.datasource.username - имя пользователя от БД

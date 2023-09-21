@@ -1,4 +1,4 @@
-package me.dbogda.ufanettestcoffeeshop.model;
+package me.dbogda.ufanettestcoffeeshop.enums;
 
 public enum ProductType {
     COFFEE("Кофе", 180),
@@ -18,7 +18,7 @@ public enum ProductType {
         return price;
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 }

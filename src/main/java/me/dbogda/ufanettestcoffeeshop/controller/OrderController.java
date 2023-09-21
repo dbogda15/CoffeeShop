@@ -5,12 +5,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
 import me.dbogda.ufanettestcoffeeshop.model.Order;
-import me.dbogda.ufanettestcoffeeshop.model.ProductType;
-import me.dbogda.ufanettestcoffeeshop.model.Report;
-import me.dbogda.ufanettestcoffeeshop.model.Status;
+import me.dbogda.ufanettestcoffeeshop.enums.ProductType;
+import me.dbogda.ufanettestcoffeeshop.enums.Status;
 import me.dbogda.ufanettestcoffeeshop.service.OrderService;
 import me.dbogda.ufanettestcoffeeshop.service.ReportService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -31,91 +29,78 @@ public class OrderController {
 
     @PostMapping
     @Operation(summary = "Создание заказа")
-    ResponseEntity<String> create(@RequestParam ProductType product,
-                                 @RequestParam String name){
-        Order order = new Order(product, name, LocalDateTime.now(), LocalDateTime.now().plusMinutes(8), LocalDateTime.now(), Status.NEW);
-        String message = orderService.create(order);
-        Report report = new Report(order, message, LocalDateTime.now());
-        reportService.create(report);
-        return ResponseEntity.ok(order.toString());
+    Order create(@RequestParam ProductType product,
+                 @RequestParam String name) {
+        return orderService.create(new Order(product, name, LocalDateTime.now(), LocalDateTime.now().plusMinutes(8), LocalDateTime.now(), Status.NEW));
     }
 
     @GetMapping("/id")
     @Operation(
-            summary = "Получить информацию о заказе",
+            summary = "Получить информацию о текущем статусе заказа и цепочке событий",
             description = "Введите ID заказа")
-    ResponseEntity<String> getInfoAboutOrder(@RequestParam Long id){
-        String result = orderService.getOrderInfo(id);
-        return ResponseEntity.ok(result);
+    StringBuilder getInfoAboutOrderById(@RequestParam Long id) {
+        return orderService.getOrderInfoById(id);
+    }
+
+    @GetMapping("/all_info")
+    @Operation(summary = "Получить информацию о текущем статусе всех заказов и цепочке событий")
+    StringBuilder getInfoAboutAllOrder(){
+        return orderService.getAllOrderInfo();
     }
 
     @GetMapping("/all")
     @Operation(summary = "Получение списка всех заказов")
-    ResponseEntity<List<Order>> getAll(){
-        List<Order> result = orderService.getAll();
-        return ResponseEntity.ok(result);
+    List<Order> getAll() {
+        return orderService.getAll();
     }
 
     @GetMapping("/new")
     @Operation(summary = "Получение списка новых заказов")
-    ResponseEntity<List<Order>> getNewOrders(){
-        List<Order> result = orderService.getNewOrders();
-        return ResponseEntity.ok(result);
+    List<Order> getNewOrders() {
+        return orderService.getNewOrders();
     }
 
     @DeleteMapping
     @Operation(
             summary = "Удаление заказа из БД",
             description = "Введите ID заказа")
-    ResponseEntity<String> delete(@RequestParam Long id){
-        String result = orderService.deleteById(id);
-        return ResponseEntity.ok(result);
+    String delete(@RequestParam Long id) {
+        return orderService.deleteById(id);
     }
+
     @PutMapping("/toWork")
     @Operation(
             summary = "Взять в работу заказ",
             description = "Введите ID заказа и имя сотрудника")
-    ResponseEntity<String> takeAnOrderToWork(@RequestParam Long orderId,
-                                             @RequestParam String employeeName){
-        String message = orderService.takeAnOrderToWork(orderId, employeeName);
-        Report report = new Report(orderService.getById(orderId), message, LocalDateTime.now());
-        reportService.create(report);
-        return ResponseEntity.ok(message);
+    String takeAnOrderToWork(@RequestParam Long orderId,
+                             @RequestParam String employeeName) {
+        return orderService.takeAnOrderToWork(orderId, employeeName);
     }
 
     @PutMapping("/ready")
     @Operation(
             summary = "Передать заказ в зону выдачи",
             description = "Введите ID заказа и имя сотрудника")
-    ResponseEntity<String> readyOrderForDelivery(@RequestParam Long orderId,
-                                                 @RequestParam String employeeName){
-        String message = orderService.readyOrderForDelivery(orderId, employeeName);
-        Report report = new Report(orderService.getById(orderId), message, LocalDateTime.now());
-        reportService.create(report);
-        return ResponseEntity.ok(message);
+    String readyOrderForDelivery(@RequestParam Long orderId,
+                                 @RequestParam String employeeName) {
+        return orderService.readyOrderForDelivery(orderId, employeeName);
     }
 
     @PutMapping("/finish")
     @Operation(
             summary = "Передать заказ клиенту",
             description = "Введите ID заказа и имя сотрудника")
-    ResponseEntity<String> issueAnOrder(@RequestParam Long orderId,
-                                        @RequestParam String employeeName){
-        String message = orderService.issueAnOrder(orderId, employeeName);
-        Report report = new Report(orderService.getById(orderId), message, LocalDateTime.now());
-        reportService.create(report);
-        return ResponseEntity.ok(message);
+    String issueAnOrder(@RequestParam Long orderId,
+                        @RequestParam String employeeName) {
+        return orderService.issueAnOrder(orderId, employeeName);
     }
 
     @PutMapping("/cancel")
     @Operation(
             summary = "Отменить заказ",
             description = "Введите ID заказа и имя сотрудника")
-    ResponseEntity<String> cancelTheOrder(@RequestParam Long orderId,
-                                          @RequestParam String employeeName){
-        String message = orderService.cancelTheOrder(orderId, employeeName);
-        Report report = new Report(orderService.getById(orderId), message, LocalDateTime.now());
-        reportService.create(report);
-        return ResponseEntity.ok(message);
+    String cancelTheOrder(@RequestParam Long orderId,
+                          @RequestParam String employeeName) {
+        return orderService.cancelTheOrder(orderId, employeeName);
     }
 }

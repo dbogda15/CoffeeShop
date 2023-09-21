@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
 import me.dbogda.ufanettestcoffeeshop.model.Report;
 import me.dbogda.ufanettestcoffeeshop.service.ReportService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,15 +29,13 @@ public class ReportController {
     @Operation(
             summary = "Получить все отчеты по заказу",
             description = "Введите ID заказа")
-    public ResponseEntity<List<Report>> getReportsByOrderId(@RequestParam Long orderId){
-        List<Report> result = reportService.getReportsByOrderId(orderId);
-        return ResponseEntity.ok(result);
+    public List<Report> getReportsByOrderId(@RequestParam Long orderId) {
+        return reportService.getReportsByOrderId(orderId);
     }
 
     @GetMapping("/all")
     @Operation(summary = "Получить все отчеты за всё время")
-    public ResponseEntity<List<Report>> getAll(){
-        List<Report> result = reportService.getAll();
-        return ResponseEntity.ok(result);
+    public List<Report> getAll() {
+        return reportService.getAll();
     }
 }

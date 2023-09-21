@@ -2,10 +2,11 @@ package me.dbogda.ufanettestcoffeeshop.service.impl;
 
 import me.dbogda.ufanettestcoffeeshop.exception.NonValidStatusException;
 import me.dbogda.ufanettestcoffeeshop.model.Order;
-import me.dbogda.ufanettestcoffeeshop.model.ProductType;
+import me.dbogda.ufanettestcoffeeshop.enums.ProductType;
 import me.dbogda.ufanettestcoffeeshop.model.Report;
-import me.dbogda.ufanettestcoffeeshop.model.Status;
+import me.dbogda.ufanettestcoffeeshop.enums.Status;
 import me.dbogda.ufanettestcoffeeshop.repository.OrderRepository;
+import me.dbogda.ufanettestcoffeeshop.service.ReportService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,11 +29,14 @@ class OrderServiceImplTest {
     @Mock
     OrderRepository orderRepository;
 
+    @Mock
+    ReportService reportService;
+
     @InjectMocks
     OrderServiceImpl out;
 
     final Order NEW_ORDER = new Order(1L, ProductType.COFFEE, "Customer", Status.NEW, LocalDateTime.now());
-    final Report REPORT = new Report(NEW_ORDER, "Message");
+    final Report REPORT = new Report(1L,NEW_ORDER, "Message", LocalDateTime.now());
     final Order CORRECT_ORDER = new Order(1L, ProductType.COFFEE, "Customer", Status.NEW, LocalDateTime.now());
     final Order CURRENT_ORDER = new Order(1L, ProductType.COFFEE, "Customer", "Employee", LocalDateTime.now(), LocalDateTime.now().plusMinutes(5),LocalDateTime.now(), Status.CURRENT, List.of(REPORT));
     final Order READY_ORDER = new Order(1L, ProductType.COFFEE, "Customer", "Employee", LocalDateTime.now(), LocalDateTime.now().plusMinutes(5),LocalDateTime.now(), Status.READY, List.of(REPORT));
@@ -43,7 +47,7 @@ class OrderServiceImplTest {
         when(orderRepository.save(NEW_ORDER))
                 .thenReturn(NEW_ORDER);
 
-        assertEquals("Заказ № " +  NEW_ORDER.getId() + " создан", out.create(NEW_ORDER));
+        assertEquals(NEW_ORDER, out.create(NEW_ORDER));
     }
 
     @Test
@@ -104,13 +108,18 @@ class OrderServiceImplTest {
     void getOrderInfo() {
         when(orderRepository.findById(CURRENT_ORDER.getId()))
                 .thenReturn(Optional.of(CURRENT_ORDER));
-
-        assertEquals(CURRENT_ORDER.toString(), out.getOrderInfo(CURRENT_ORDER.getId()));
+        String status = "Текущий статус заказа: " + CURRENT_ORDER.getStatus().toString();
+        StringBuilder result = new StringBuilder("Список событий: ");
+        List<Report> reports = CURRENT_ORDER.getReports();
+        for (Report report : reports){
+            result.append("\n").append(report.getMessage()).append(". Время события: ").append(report.getLocalDateTime().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")));
+        }
+        assertEquals(status + "\n" + result, out.getOrderInfoById(CURRENT_ORDER.getId()).toString());
 
         verify(orderRepository, times(1)).findById(CURRENT_ORDER.getId());
     }
 
-        @Test
+    @Test
     @DisplayName("Принять заказ в работу")
     void takeAnOrderToWork() {
         when(orderRepository.findById(any()))

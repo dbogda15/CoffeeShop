@@ -1,7 +1,7 @@
 package me.dbogda.ufanettestcoffeeshop.service.impl;
 
 import me.dbogda.ufanettestcoffeeshop.model.Order;
-import me.dbogda.ufanettestcoffeeshop.model.ProductType;
+import me.dbogda.ufanettestcoffeeshop.enums.ProductType;
 import me.dbogda.ufanettestcoffeeshop.model.Report;
 import me.dbogda.ufanettestcoffeeshop.repository.OrderRepository;
 import me.dbogda.ufanettestcoffeeshop.repository.ReportRepository;
@@ -69,7 +69,7 @@ class ReportServiceImplTest {
 
     @Test
     @DisplayName("Выбросить исключение, если заказа не существует")
-    void shouldThrowNotFoundException(){
+    void shouldThrowNotFoundException() {
         when(orderRepository.findById(ORDER.getId()))
                 .thenReturn(Optional.empty());
 

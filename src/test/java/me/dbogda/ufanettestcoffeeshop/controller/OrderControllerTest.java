@@ -1,27 +1,22 @@
 package me.dbogda.ufanettestcoffeeshop.controller;
 
 import me.dbogda.ufanettestcoffeeshop.model.Order;
-import me.dbogda.ufanettestcoffeeshop.model.ProductType;
-import me.dbogda.ufanettestcoffeeshop.model.Report;
-import me.dbogda.ufanettestcoffeeshop.model.Status;
+import me.dbogda.ufanettestcoffeeshop.enums.ProductType;
+import me.dbogda.ufanettestcoffeeshop.enums.Status;
 import me.dbogda.ufanettestcoffeeshop.service.impl.OrderServiceImpl;
 import me.dbogda.ufanettestcoffeeshop.service.impl.ReportServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -39,19 +34,20 @@ class OrderControllerTest {
     MockMvc mockMvc;
 
     final Order NEW_ORDER = new Order(1L, ProductType.COFFEE, "Customer", Status.NEW, LocalDateTime.now());
-    final Report REPORT = new Report(NEW_ORDER, "Message");
+    final Order CREATED_ORDER = new Order(ProductType.COFFEE, "Customer");
 
     @Test
     @DisplayName("Создание нового заказа через контроллер")
     void shouldReturn200WhenCreateNewOrder() throws Exception {
-       when(orderService.create(NEW_ORDER)).thenReturn("Заказ № " +  NEW_ORDER.getId() + " создан");
-       mockMvc.perform(post("/order")
-               .param("product", "COFFEE")
-               .param("name", "Customer"))
-               .andExpect(status().isOk())
-               .andExpect(content().string(NEW_ORDER.toString()));
+        when(orderService.create(any(Order.class))).thenReturn(CREATED_ORDER);
+        mockMvc.perform(post("/order")
+                        .param("product", "COFFEE")
+                        .param("name", "Customer"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("product").value(CREATED_ORDER.getProduct().toString()))
+                .andExpect(jsonPath("customer").value(CREATED_ORDER.getCustomer()));
 
-       verify(orderService, times(1)).create(NEW_ORDER);
+        verify(orderService, times(1)).create(any(Order.class));
     }
 
     @Test

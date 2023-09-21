@@ -1,4 +1,4 @@
-package me.dbogda.ufanettestcoffeeshop.model;
+package me.dbogda.ufanettestcoffeeshop.enums;
 
 public enum Status {
     NEW("Новый заказ"),
@@ -8,11 +8,12 @@ public enum Status {
     CANCELLED("Заказ отменён");
 
     private final String name;
-    Status(String name){
+
+    Status(String name) {
         this.name = name;
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 }

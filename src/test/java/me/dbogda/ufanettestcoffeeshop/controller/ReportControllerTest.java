@@ -33,7 +33,13 @@ class ReportControllerTest {
     @Autowired
     MockMvc mockMvc;
 
-    final Order ORDER = new Order(1L, ProductType.COFFEE, "Customer", Status.CURRENT, LocalDateTime.now());
+    final Order ORDER = Order.builder()
+            .id(1L)
+            .customer("Customer")
+            .product(ProductType.COFFEE)
+            .status(Status.CURRENT)
+            .timeOfOrder( LocalDateTime.now())
+            .build();
     final Report REPORT = new Report(1L, ORDER, "Message", LocalDateTime.now());
 
     @Test

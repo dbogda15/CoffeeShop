@@ -1,5 +1,6 @@
 package me.dbogda.ufanettestcoffeeshop.service;
 
+import me.dbogda.ufanettestcoffeeshop.enums.Action;
 import me.dbogda.ufanettestcoffeeshop.model.Order;
 
 import java.util.List;
@@ -13,16 +14,8 @@ public interface OrderService {
 
     List<Order> getAll();
 
-    String takeAnOrderToWork(Long orderId, String employeeName);
-
-    String readyOrderForDelivery(Long orderId, String employeeName);
-
-    String issueAnOrder(Long orderId, String employeeName);
-
-    String cancelTheOrder(Long orderId, String employeeName);
+    String makeSomeActionWithOrder(Long orderId, String employeeName, Action action);
 
     List<Order> getNewOrders();
 
-    StringBuilder getOrderInfoById(Long id);
-    StringBuilder getAllOrderInfo();
 }

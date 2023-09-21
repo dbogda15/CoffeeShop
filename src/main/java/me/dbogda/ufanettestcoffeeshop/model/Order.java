@@ -9,6 +9,7 @@ import me.dbogda.ufanettestcoffeeshop.enums.Status;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -17,6 +18,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
+@Builder
 @Table(name = "Orders")
 public class Order {
     @Id
@@ -36,28 +38,11 @@ public class Order {
     @JsonIgnoreProperties(value = "order", allowGetters = true)
     @JsonManagedReference
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "order")
-    private List<Report> reports;
+    private List<Report> reports = new ArrayList<>();
 
     public Order(ProductType product, String customer) {
         this.product = product;
         this.customer = customer;
-    }
-
-    public Order(Long id, ProductType product, String customer, Status status, LocalDateTime timeOfOrder) {
-        this.id = id;
-        this.product = product;
-        this.customer = customer;
-        this.status = status;
-        this.timeOfOrder = timeOfOrder;
-    }
-
-    public Order(ProductType product, String customer, LocalDateTime timeOfOrder, LocalDateTime timeOfOrderIssue, LocalDateTime timeOfTheLastMoving, Status status) {
-        this.product = product;
-        this.customer = customer;
-        this.timeOfOrder = timeOfOrder;
-        this.timeOfOrderIssue = timeOfOrderIssue;
-        this.timeOfTheLastMoving = timeOfTheLastMoving;
-        this.status = status;
     }
 
     @Override

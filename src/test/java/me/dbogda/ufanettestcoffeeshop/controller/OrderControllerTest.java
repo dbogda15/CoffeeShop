@@ -1,5 +1,6 @@
 package me.dbogda.ufanettestcoffeeshop.controller;
 
+import me.dbogda.ufanettestcoffeeshop.enums.Action;
 import me.dbogda.ufanettestcoffeeshop.model.Order;
 import me.dbogda.ufanettestcoffeeshop.enums.ProductType;
 import me.dbogda.ufanettestcoffeeshop.enums.Status;
@@ -33,7 +34,13 @@ class OrderControllerTest {
     @Autowired
     MockMvc mockMvc;
 
-    final Order NEW_ORDER = new Order(1L, ProductType.COFFEE, "Customer", Status.NEW, LocalDateTime.now());
+    final Order NEW_ORDER = Order.builder()
+            .id(1L)
+            .customer("Customer")
+            .product(ProductType.COFFEE)
+            .status(Status.NEW)
+            .timeOfOrder( LocalDateTime.now())
+            .build();
     final Order CREATED_ORDER = new Order(ProductType.COFFEE, "Customer");
 
     @Test
@@ -91,35 +98,49 @@ class OrderControllerTest {
     @Test
     @DisplayName("Передать заказ в работу через контроллер")
     void takeAnOrderToWork() throws Exception {
-        when(orderService.takeAnOrderToWork(1L, "Employee")).thenReturn("Заказ № " + 1L + " был взят в работу сотрудником Employee");
-        mockMvc.perform(put("/order/toWork?orderId=1&employeeName=Employee"))
+        when(orderService.makeSomeActionWithOrder(1L, "Employee", Action.TO_WORK)).thenReturn("Заказ № " + 1L + " был взят в работу сотрудником Employee");
+        mockMvc.perform(put("/order/action?orderId=1&employeeName=Employee&action=TO_WORK"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Заказ № " + 1L + " был взят в работу сотрудником Employee"));
 
-        verify(orderService, times(1)).takeAnOrderToWork(1L, "Employee");
+        verify(orderService, times(1)).makeSomeActionWithOrder(1L, "Employee", Action.TO_WORK);
     }
 
     @Test
     @DisplayName("Передать заказ в зону выдачи через контроллер")
     void readyOrderForDelivery() throws Exception {
-        when(orderService.readyOrderForDelivery(1L, "Employee"))
+        when(orderService.makeSomeActionWithOrder(1L, "Employee", Action.READY_FOR_DELIVERY))
                 .thenReturn("Заказ № " + 1L + " был взят в работу сотрудником Employee и готов к выдаче!");
-        mockMvc.perform(put("/order/ready?orderId=1&employeeName=Employee"))
+        mockMvc.perform(put("/order/action?orderId=1&employeeName=Employee&action=READY_FOR_DELIVERY"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Заказ № " + 1L + " был взят в работу сотрудником Employee и готов к выдаче!"));
 
-        verify(orderService, times(1)).readyOrderForDelivery(1L, "Employee");
+        verify(orderService, times(1)).makeSomeActionWithOrder(1L, "Employee", Action.READY_FOR_DELIVERY);
     }
 
     @Test
     @DisplayName("Передать заказ клиенту через контроллер")
     void issueAnOrder() throws Exception {
-        when(orderService.issueAnOrder(1L, "Employee"))
+        when(orderService.makeSomeActionWithOrder(1L, "Employee", Action.FINISH))
                 .thenReturn("Заказ № " + 1L + " был выдан сотрудником Employee");
-        mockMvc.perform(put("/order/finish?orderId=1&employeeName=Employee"))
+        mockMvc.perform(put("/order/action?orderId=1&employeeName=Employee&action=FINISH"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Заказ № " + 1L + " был выдан сотрудником Employee"));
 
-        verify(orderService, times(1)).issueAnOrder(1L, "Employee");
+        verify(orderService, times(1)).makeSomeActionWithOrder(1L, "Employee", Action.FINISH);
+    }
+
+    @Test
+    @DisplayName("Получение информации о заказе")
+    void shouldReturnCorrectOrderById() throws Exception{
+        when(orderService.getById(1L)).thenReturn(NEW_ORDER);
+        mockMvc.perform(get("/order/id?id=1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("id").value(NEW_ORDER.getId()))
+                .andExpect(jsonPath("product").value(NEW_ORDER.getProduct().toString()))
+                .andExpect(jsonPath("customer").value(NEW_ORDER.getCustomer()))
+                .andExpect(jsonPath("status").value(NEW_ORDER.getStatus().toString()));
+
+        verify(orderService, times(1)).getById(1L);
     }
 }

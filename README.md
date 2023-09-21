@@ -10,17 +10,16 @@
 - на каждом из этапов осуществляется запись совершенного действия с фикцацией даты и времени (формирование отчета)
 - получить отчёты (по заказу, по всем заказам)
 
-Для запуска программы поменяйте следующие параметры:
-- изменить значение свойств в файле application.properties:
-    - spring.datasource.url - путь до базы данных
-    - spring.datasource.username - имя пользователя от БД
-    - spring.datasource.password - пароль от БД
+Для запуска программы необходимо изменить значения свойств в файле application.properties:
+- spring.datasource.url - путь до базы данных
+- spring.datasource.username - имя пользователя от БД
+- spring.datasource.password - пароль от БД
  
-  Стек технологий:
-  - Java 17
-  - Mockito
-  - Hibernate
-  - PostrgreSQL
-  - SpringBoot Framework
-  - Lombok
-  - Maven
+Стек технологий:
+- Java 17
+- Mockito
+- Hibernate
+- PostrgreSQL
+- SpringBoot Framework
+- Lombok
+- Maven

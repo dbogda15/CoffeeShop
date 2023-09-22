@@ -14,6 +14,8 @@
 - spring.datasource.url - путь до базы данных
 - spring.datasource.username - имя пользователя от БД
 - spring.datasource.password - пароль от БД
+
+Работу приложения можно протестировать через <a href="http://localhost:8080/swagger-ui/index.html#/"> Swagger</a>
  
 Стек технологий:
 - Java 17

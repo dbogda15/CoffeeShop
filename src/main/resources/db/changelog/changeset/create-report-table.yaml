@@ -1,0 +1,66 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-report
+      author: Bogdanova Diana
+      changes:
+        - createTable:
+            tableName: reports
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: time_of_report
+                  type: timestamp
+                  nullable: false
+              - column:
+                  name: message
+                  type: varchar(255)
+                  nullable: false
+              - column:
+                  name: order_id
+                  type: bigint
+                  constraints:
+                    foreignKeyName: order_report_fk
+                    referencedTableName: orders
+                    referencedColumnNames: id
+
+#  - changeSet:
+#      id: report1
+#      author: dbogda15
+#      comment: "Create report"
+#      changes:
+#        - insert:
+#            tableName: reports
+#            columns:
+#              - column:
+#                  name: time_of_report
+#                  value: 2023-09-22T12:20:00Z
+#              - column:
+#                  name: message
+#                  value: "Order has been created"
+#              - column:
+#                  name: order_id
+#                  value: 1
+
+#  - changeSet:
+#      id: report2
+#      author: dbogda15
+#      comment: "Create report"
+#      changes:
+#        - insert:
+#            tableName: reports
+#            columns:
+#              - column:
+#                  name: time_of_report
+#                  value: 2023-09-22T12:30:00Z
+#              - column:
+#                  name: message
+#                  value: "Order has been created"
+#              - column:
+#                  name: order_id
+#                  value: 2

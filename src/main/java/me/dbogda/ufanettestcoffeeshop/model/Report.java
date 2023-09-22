@@ -13,6 +13,7 @@ import java.time.format.DateTimeFormatter;
 @Getter
 @Setter
 @EqualsAndHashCode
+@ToString
 @Table(name = "reports")
 public class Report {
     @Id
@@ -20,27 +21,20 @@ public class Report {
     Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
-    @JoinColumn(name = "order_id")
     Order order;
     String message;
-    LocalDateTime localDateTime;
+    @Column(name = "time_of_report")
+    LocalDateTime timeOfReport;
 
     public Report(Order order, String message) {
         this.order = order;
         this.message = message;
     }
 
-    public Report(Order order, String message, LocalDateTime localDateTime) {
+    public Report(Order order, String message, LocalDateTime timeOfReport) {
         this.order = order;
         this.message = message;
-        this.localDateTime = localDateTime;
+        this.timeOfReport = timeOfReport;
     }
 
-    @Override
-    public String toString() {
-        return "Отчёт № " + id +
-                ", по заказу № " + order.getId() +
-                ". Комментарий: " + message + '\'' +
-                ", дата отчета: " + localDateTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
-    }
 }

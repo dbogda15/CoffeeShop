@@ -1,0 +1,92 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-order
+      author: Bogdanova Diana
+      changes:
+        - createTable:
+            tableName: orders
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: customer
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: employee
+                  type: varchar(255)
+              - column:
+                  name: product
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: integer
+              - column:
+                  name: time_of_order
+                  type: timestamp
+              - column:
+                  name: time_of_order_issue
+                  type: timestamp
+              - column:
+                  name: time_of_the_last_moving
+                  type: timestamp
+  - changeSet:
+      id: order1
+      author: dbogda15
+      comment: "Создать заказ"
+      changes:
+        - insert:
+            tableName: orders
+            columns:
+              - column:
+                  name: customer
+                  value: "Данила"
+              - column:
+                  name: product
+                  value: 1
+              - column:
+                  name: status
+                  value: 0
+              - column:
+                  name: time_of_order
+                  value: 2023-09-22T12:20:00Z
+              - column:
+                  name: time_of_order_issue
+                  value: 2023-09-22T12:30:00Z
+              - column:
+                  name: time_of_the_last_moving
+                  value: 2023-09-22T12:20:00Z
+
+  - changeSet:
+      id: order2
+      author: dbogda15
+      comment: "Создать заказ"
+      changes:
+        - insert:
+            tableName: orders
+            columns:
+              - column:
+                  name: customer
+                  value: "Глеб"
+              - column:
+                  name: product
+                  value: 3
+              - column:
+                  name: status
+                  value: 0
+              - column:
+                  name: time_of_order
+                  value: 2023-09-22T12:30:00Z
+              - column:
+                  name: time_of_order_issue
+                  value: 2023-09-22T12:40:00Z
+              - column:
+                  name: time_of_the_last_moving
+                  value: 2023-09-22T12:30:00Z

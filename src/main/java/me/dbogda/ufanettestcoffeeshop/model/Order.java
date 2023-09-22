@@ -19,7 +19,8 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode
 @Builder
-@Table(name = "Orders")
+@ToString
+@Table(name = "orders")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,14 +44,5 @@ public class Order {
     public Order(ProductType product, String customer) {
         this.product = product;
         this.customer = customer;
-    }
-
-    @Override
-    public String toString() {
-        return "Номер заказа: № " + id +
-                ", заказано: " + product.getName() +
-                ", цена: " + product.getPrice() +
-                ", время заказа: " + timeOfOrder.format(DateTimeFormatter.ofPattern("HH:mm")) +
-                ", статус заказа: " + status.getName();
     }
 }

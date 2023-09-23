@@ -8,18 +8,14 @@ import me.dbogda.ufanettestcoffeeshop.enums.Status;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-@EqualsAndHashCode
 @Builder
-@ToString
 @Table(name = "orders")
 public class Order {
     @Id
@@ -28,11 +24,8 @@ public class Order {
     private ProductType product;
     private String customer;
     private String employee;
-    @Column(name = "time_of_order")
     private LocalDateTime timeOfOrder;
-    @Column(name = "time_of_order_issue")
     private LocalDateTime timeOfOrderIssue;
-    @Column(name = "time_of_the_last_moving")
     private LocalDateTime timeOfTheLastMoving;
     private Status status;
 

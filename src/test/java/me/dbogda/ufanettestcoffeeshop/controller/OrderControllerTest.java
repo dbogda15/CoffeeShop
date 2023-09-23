@@ -16,6 +16,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -42,6 +44,17 @@ class OrderControllerTest {
             .timeOfOrder( LocalDateTime.now())
             .build();
     final Order CREATED_ORDER = new Order(ProductType.COFFEE, "Customer");
+    final Order CURRENT_ORDER = Order.builder()
+            .id(1L)
+            .customer("Customer")
+            .employee("Employee")
+            .product(ProductType.COFFEE)
+            .status(Status.CURRENT)
+            .timeOfOrder( LocalDateTime.now())
+            .timeOfOrderIssue(LocalDateTime.now().plusMinutes(5))
+            .timeOfTheLastMoving(LocalDateTime.now())
+            .reports(new ArrayList<>())
+            .build();
 
     @Test
     @DisplayName("Создание нового заказа через контроллер")
@@ -142,5 +155,24 @@ class OrderControllerTest {
                 .andExpect(jsonPath("status").value(NEW_ORDER.getStatus().toString()));
 
         verify(orderService, times(1)).getById(1L);
+    }
+
+    @Test
+    @DisplayName("Получить информацию о заказе для клиента")
+    void shouldReturn200_whenGetOrderInfoForCustomer() throws Exception{
+        when(orderService.getOrderInfoForCustomer(CURRENT_ORDER.getId())).thenReturn("Заказ № " + CURRENT_ORDER.getId() + " для " + CURRENT_ORDER.getCustomer() +"\nСостав заказа: " + CURRENT_ORDER.getProduct().getName()
+                + "\nСтоимость: " + CURRENT_ORDER.getProduct().getPrice() + "\nПримерное время получения: "
+                + CURRENT_ORDER.getTimeOfOrderIssue().format(DateTimeFormatter.ofPattern("HH:mm"))
+                + "\nСтатус заказа: " + CURRENT_ORDER.getStatus().getName());
+
+        mockMvc.perform(get("/order/for_customer")
+                        .param("id", CURRENT_ORDER.getId().toString()))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Заказ № " + CURRENT_ORDER.getId() + " для " + CURRENT_ORDER.getCustomer() +"\nСостав заказа: " + CURRENT_ORDER.getProduct().getName()
+                        + "\nСтоимость: " + CURRENT_ORDER.getProduct().getPrice() + "\nПримерное время получения: "
+                        + CURRENT_ORDER.getTimeOfOrderIssue().format(DateTimeFormatter.ofPattern("HH:mm"))
+                        + "\nСтатус заказа: " + CURRENT_ORDER.getStatus().getName()));
+
+        verify(orderService, times(1)).getOrderInfoForCustomer(CURRENT_ORDER.getId());
     }
 }

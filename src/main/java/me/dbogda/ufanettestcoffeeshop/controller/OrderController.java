@@ -79,4 +79,13 @@ public class OrderController {
                              @RequestParam Action action) {
         return orderService.makeSomeActionWithOrder(orderId, employeeName, action);
     }
+
+    @GetMapping("/for_customer")
+    @Operation(
+            summary = "Получить информацию о заказе для клиента",
+            description = "Введите ID заказа"
+    )
+    String getOrderInfoForCustomer(@RequestParam Long id){
+        return orderService.getOrderInfoForCustomer(id);
+    }
 }

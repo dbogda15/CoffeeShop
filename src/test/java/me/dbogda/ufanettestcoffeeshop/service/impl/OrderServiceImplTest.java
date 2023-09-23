@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.webjars.NotFoundException;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -185,5 +186,20 @@ class OrderServiceImplTest {
     @DisplayName("Выбросить исключение при попытке отменить готовый заказ")
     void throwNonValidStatusExceptionWhenCancelTheReadyOrder() {
         assertThrows(NonValidStatusException.class, ()-> out.cancelTheOrder(READY_ORDER, "Employee"));
+    }
+
+    @Test
+    @DisplayName("Получить информацию о заказе для клиента")
+    void shouldReturnCorrectOrderInfoForCustomer(){
+        when(orderRepository.findById(CURRENT_ORDER.getId())).thenReturn(Optional.of(CURRENT_ORDER));
+
+        String result = "Заказ № " + CURRENT_ORDER.getId() + " для " + CURRENT_ORDER.getCustomer() +"\nСостав заказа: " + CURRENT_ORDER.getProduct().getName()
+                + "\nСтоимость: " + CURRENT_ORDER.getProduct().getPrice() + "\nПримерное время получения: "
+                + CURRENT_ORDER.getTimeOfOrderIssue().format(DateTimeFormatter.ofPattern("HH:mm"))
+                + "\nСтатус заказа: " + CURRENT_ORDER.getStatus().getName();
+
+        assertEquals(result, out.getOrderInfoForCustomer(CURRENT_ORDER.getId()));
+
+        verify(orderRepository, times(1)).findById(CURRENT_ORDER.getId());
     }
 }

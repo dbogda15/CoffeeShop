@@ -1,5 +1,10 @@
 package me.dbogda.ufanettestcoffeeshop.enums;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+@Getter
 public enum Action {
     TO_WORK ("Взять в работу"),
     READY_FOR_DELIVERY ("Передать в доставку"),
@@ -7,11 +12,4 @@ public enum Action {
     CANCEL("Отменить заказ");
 
     private final String message;
-    Action(String message){
-        this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
-    }
 }

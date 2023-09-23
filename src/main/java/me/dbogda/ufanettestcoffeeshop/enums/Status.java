@@ -1,5 +1,10 @@
 package me.dbogda.ufanettestcoffeeshop.enums;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+@Getter
 public enum Status {
     NEW("Новый заказ"),
     CURRENT("Заказ взят в работу"),
@@ -8,12 +13,4 @@ public enum Status {
     CANCELLED("Заказ отменён");
 
     private final String name;
-
-    Status(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
 }

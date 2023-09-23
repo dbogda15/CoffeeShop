@@ -5,15 +5,12 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Entity
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-@EqualsAndHashCode
-@ToString
+@Builder
 @Table(name = "reports")
 public class Report {
     @Id
@@ -23,18 +20,10 @@ public class Report {
     @JsonBackReference
     Order order;
     String message;
-    @Column(name = "time_of_report")
     LocalDateTime timeOfReport;
 
     public Report(Order order, String message) {
         this.order = order;
         this.message = message;
     }
-
-    public Report(Order order, String message, LocalDateTime timeOfReport) {
-        this.order = order;
-        this.message = message;
-        this.timeOfReport = timeOfReport;
-    }
-
 }

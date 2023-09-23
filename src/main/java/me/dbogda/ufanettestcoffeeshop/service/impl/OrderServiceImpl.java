@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +23,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order create(Order order) {
-        order.getReports().add(new Report(order, "Заказ создан", LocalDateTime.now()));
+        order.getReports().add(Report.builder().order(order).message("Заказ создан").timeOfReport(LocalDateTime.now()).build());
         orderRepository.save(order);
         return order;
     }
@@ -64,7 +65,7 @@ public class OrderServiceImpl implements OrderService {
             order.setTimeOfOrderIssue(order.getTimeOfOrder().plusMinutes(5));
             order.setTimeOfTheLastMoving(LocalDateTime.now());
             String message = "Заказ № " + order.getId() + " был взят в работу сотрудником " + employeeName;
-            order.getReports().add(new Report(order, message, LocalDateTime.now()));
+            order.getReports().add(Report.builder().order(order).message(message).timeOfReport(LocalDateTime.now()).build());
             orderRepository.save(order);
             return message;
         }
@@ -78,7 +79,7 @@ public class OrderServiceImpl implements OrderService {
             order.setStatus(Status.READY);
             order.setTimeOfTheLastMoving(LocalDateTime.now());
             String message = "Заказ № " + order.getId() + " был взят в работу сотрудником " + employeeName + " и готов к выдаче!";
-            order.getReports().add(new Report(order, message, LocalDateTime.now()));
+            order.getReports().add(Report.builder().order(order).message(message).timeOfReport(LocalDateTime.now()).build());
             orderRepository.save(order);
             return message;
         }
@@ -93,7 +94,7 @@ public class OrderServiceImpl implements OrderService {
             order.setStatus(Status.FINISHED);
             order.setTimeOfTheLastMoving(LocalDateTime.now());
             String message = "Заказ № " + order.getId() + " был выдан сотрудником " + employeeName;
-            order.getReports().add(new Report(order, message, LocalDateTime.now()));
+            order.getReports().add(Report.builder().order(order).message(message).timeOfReport(LocalDateTime.now()).build());
             orderRepository.save(order);
             return message;
         }
@@ -108,19 +109,19 @@ public class OrderServiceImpl implements OrderService {
         } else if (status.equals(Status.NEW)) {
             order.setStatus(Status.CANCELLED);
             String message = "Заказ № " + order.getId() + " был отменен сотрудником " + employeeName + ", так как не прошла оплата.";
-            order.getReports().add(new Report(order, message, LocalDateTime.now()));
+            order.getReports().add(Report.builder().order(order).message(message).timeOfReport(LocalDateTime.now()).build());
             orderRepository.save(order);
             return message;
         } else if (status.equals(Status.CURRENT)) {
             order.setStatus(Status.CANCELLED);
             String message = "Заказ № " + order.getId() + " был отменен сотрудником " + employeeName + ", так как невозможно собрать полный заказ";
-            order.getReports().add(new Report(order, message, LocalDateTime.now()));
+            order.getReports().add(Report.builder().order(order).message(message).timeOfReport(LocalDateTime.now()).build());
             orderRepository.save(order);
             return message;
         } else if (status.equals(Status.READY) && LocalDateTime.now().isAfter(order.getTimeOfOrderIssue().plusMinutes(10))) {
             order.setStatus(Status.CANCELLED);
             String message = "Заказ № " + order.getId() + " был отменен сотрудником " + employeeName + ", так как заказ не забрали в течение 10 минут после готовности";
-            order.getReports().add(new Report(order, message, LocalDateTime.now()));
+            order.getReports().add(Report.builder().order(order).message(message).timeOfReport(LocalDateTime.now()).build());
             orderRepository.save(order);
             return message;
         }
@@ -135,5 +136,14 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Order> getNewOrders() {
         return orderRepository.getOrdersByStatus(Status.NEW);
+    }
+
+    @Override
+    public String getOrderInfoForCustomer(Long id) {
+        Order order = getById(id);
+        return "Заказ № " + id + " для " + order.getCustomer() +"\nСостав заказа: " + order.getProduct().getName()
+                + "\nСтоимость: " + order.getProduct().getPrice() + "\nПримерное время получения: "
+                + order.getTimeOfOrderIssue().format(DateTimeFormatter.ofPattern("HH:mm"))
+                + "\nСтатус заказа: " + order.getStatus().getName();
     }
 }

@@ -29,7 +29,7 @@ public class OrderController {
 
     @PostMapping
     @Operation(summary = "Создание заказа")
-    Order create(@RequestParam ProductType product,
+    Long create(@RequestParam ProductType product,
                  @RequestParam String name) {
         return orderService.create(Order.builder()
                 .product(product)
@@ -42,11 +42,11 @@ public class OrderController {
                 .build());
     }
 
-    @GetMapping("/id")
+    @GetMapping("/{id}")
     @Operation(
             summary = "Получить информацию о текущем статусе заказа и цепочке событий",
             description = "Введите ID заказа")
-    Order getInfoAboutOrderById(@RequestParam Long id) {
+    Order getInfoAboutOrderById(@PathVariable Long id) {
         return orderService.findOrder(id);
     }
 
@@ -62,30 +62,30 @@ public class OrderController {
         return orderService.getNewOrders();
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     @Operation(
             summary = "Удаление заказа из БД",
             description = "Введите ID заказа")
-    String delete(@RequestParam Long id) {
-        return orderService.deleteById(id);
+    void delete(@PathVariable Long id) {
+        orderService.deleteById(id);
     }
 
-    @PutMapping("/action")
+    @PutMapping("/action/{id}")
     @Operation(
             summary = "Произвести действие над заказом",
             description = "Введите ID заказа и имя сотрудника")
-    String takeAnOrderToWork(@RequestParam Long orderId,
-                             @RequestParam String employeeName,
-                             @RequestParam Action action) {
-        return orderService.publishEvent(orderId, employeeName, action);
+    void takeAnOrderToWork(@PathVariable Long id,
+                           @RequestParam String employeeName,
+                           @RequestParam Action action) {
+        orderService.publishEvent(id, employeeName, action);
     }
 
-    @GetMapping("/for_customer")
+    @GetMapping("/for_customer/{id}")
     @Operation(
             summary = "Получить информацию о заказе для клиента",
             description = "Введите ID заказа"
     )
-    String getOrderInfoForCustomer(@RequestParam Long id){
+    String getOrderInfoForCustomer(@PathVariable Long id){
         return orderService.getOrderInfoForCustomer(id);
     }
 }

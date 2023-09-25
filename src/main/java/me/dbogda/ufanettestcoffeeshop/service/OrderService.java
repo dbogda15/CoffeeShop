@@ -6,15 +6,15 @@ import me.dbogda.ufanettestcoffeeshop.model.Order;
 import java.util.List;
 
 public interface OrderService {
-    Order create(Order order);
+    Long create(Order order);
 
-    String deleteById(Long id);
+    void deleteById(Long id);
 
     Order findOrder(Long id);
 
     List<Order> getAll();
 
-    String publishEvent(Long orderId, String employeeName, Action action);
+    void publishEvent(Long orderId, String employeeName, Action action);
 
     List<Order> getNewOrders();
 

@@ -70,18 +70,14 @@ class OrderServiceImplTest {
         when(orderRepository.save(CORRECT_ORDER))
                 .thenReturn(CORRECT_ORDER);
 
-        assertEquals(CORRECT_ORDER, out.create(CORRECT_ORDER));
+        assertEquals(CORRECT_ORDER.getId(), out.create(CORRECT_ORDER));
     }
 
     @Test
     @DisplayName("Удаление заказа из БД по его ID")
     void deleteById() {
-        when(orderRepository.findById(CORRECT_ORDER.getId()))
-                .thenReturn(Optional.of(CORRECT_ORDER));
-
-        assertEquals("Заказ удалён из БД", out.deleteById(CORRECT_ORDER.getId()));
-
-        verify(orderRepository, times(1)).findById(CORRECT_ORDER.getId());
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(CORRECT_ORDER));
+        out.deleteById(1L);
     }
 
     @Test
@@ -140,46 +136,34 @@ class OrderServiceImplTest {
     @Test
     @DisplayName("Принять заказ в работу")
     void takeAnOrderToWork() {
-        String result = out.takeAnOrderToWork(CORRECT_ORDER, "Employee");
-
-        assertEquals("Заказ № " + CORRECT_ORDER.getId() + " был взят в работу сотрудником Employee", result);
-
+        out.takeAnOrderToWork(CORRECT_ORDER, "Employee");
         verify(orderRepository, times(1)).save(CORRECT_ORDER);
     }
 
     @Test
     @DisplayName("Подготовить заказ к выдаче")
     void readyOrderForDelivery() {
-        String result = out.readyOrderForDelivery(CURRENT_ORDER, "Employee");
-
-        assertEquals("Заказ № " + CURRENT_ORDER.getId() + " был взят в работу сотрудником Employee и готов к выдаче!", result);
-
+        out.readyOrderForDelivery(CURRENT_ORDER, "Employee");
         verify(orderRepository, times(1)).save(CURRENT_ORDER);
     }
 
     @Test
     @DisplayName("Передать заказ клиенту")
     void issueAnOrder() {
-        String result = out.issueAnOrder(READY_ORDER, "Employee");
-
-        assertEquals("Заказ № " + READY_ORDER.getId() + " был выдан сотрудником " + READY_ORDER.getEmployee(), result);
+        out.issueAnOrder(READY_ORDER, "Employee");
+        verify(orderRepository, times(1)).save(READY_ORDER);
     }
 
     @Test
     @DisplayName("Отменить новый заказ")
     void cancelTheNewOrder() {
-        String newOrder = out.cancelTheOrder(CORRECT_ORDER, "Employee");
-
-        assertEquals("Заказ № " + CORRECT_ORDER.getId() + " был отменен сотрудником " + CORRECT_ORDER.getEmployee() + ", так как не прошла оплата.", newOrder);
-
+        out.cancelTheOrder(CORRECT_ORDER, "Employee");
     }
 
     @Test
     @DisplayName("Отменить текущий заказ")
     void cancelTheCurrentOrder() {
-        String currentOrder = out.cancelTheOrder(CURRENT_ORDER, "Employee");
-
-        assertEquals("Заказ № " + CURRENT_ORDER.getId() + " был отменен сотрудником " + CURRENT_ORDER.getEmployee() + ", так как невозможно собрать полный заказ", currentOrder);
+        out.cancelTheOrder(CURRENT_ORDER, "Employee");
     }
 
     @Test

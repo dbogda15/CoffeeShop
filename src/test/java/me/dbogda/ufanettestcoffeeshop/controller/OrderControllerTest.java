@@ -59,13 +59,11 @@ class OrderControllerTest {
     @Test
     @DisplayName("Создание нового заказа через контроллер")
     void shouldReturn200WhenCreateNewOrder() throws Exception {
-        when(orderService.create(any(Order.class))).thenReturn(CREATED_ORDER);
+        when(orderService.create(any(Order.class))).thenReturn(CREATED_ORDER.getId());
         mockMvc.perform(post("/order")
                         .param("product", "COFFEE")
                         .param("name", "Customer"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("product").value(CREATED_ORDER.getProduct().toString()))
-                .andExpect(jsonPath("customer").value(CREATED_ORDER.getCustomer()));
+                .andExpect(status().isOk());
 
         verify(orderService, times(1)).create(any(Order.class));
     }
@@ -101,20 +99,18 @@ class OrderControllerTest {
     @Test
     @DisplayName("Удаление заказа из БД через контроллер")
     void shouldReturn200WhenDelete() throws Exception {
-        when(orderService.deleteById(1L)).thenReturn("Заказ удалён из БД");
-        mockMvc.perform(delete("/order?id=1"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Заказ удалён из БД"));
-        verify(orderService, times(1)).deleteById(1L);
+        when(orderService.findOrder(1L)).thenReturn(CURRENT_ORDER);
+        mockMvc.perform(delete("/order/{id}", 1L))
+                .andExpect(status().isOk());
     }
 
     @Test
     @DisplayName("Передать заказ в работу через контроллер")
     void takeAnOrderToWork() throws Exception {
-        when(orderService.publishEvent(1L, "Employee", Action.TO_WORK)).thenReturn("Заказ № " + 1L + " был взят в работу сотрудником Employee");
-        mockMvc.perform(put("/order/action?orderId=1&employeeName=Employee&action=TO_WORK"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Заказ № " + 1L + " был взят в работу сотрудником Employee"));
+        mockMvc.perform(put("/order/action/{id}", 1L)
+                        .param("employeeName", "Employee")
+                        .param("action", Action.TO_WORK.toString()))
+                .andExpect(status().isOk());
 
         verify(orderService, times(1)).publishEvent(1L, "Employee", Action.TO_WORK);
     }
@@ -122,11 +118,10 @@ class OrderControllerTest {
     @Test
     @DisplayName("Передать заказ в зону выдачи через контроллер")
     void readyOrderForDelivery() throws Exception {
-        when(orderService.publishEvent(1L, "Employee", Action.READY_FOR_DELIVERY))
-                .thenReturn("Заказ № " + 1L + " был взят в работу сотрудником Employee и готов к выдаче!");
-        mockMvc.perform(put("/order/action?orderId=1&employeeName=Employee&action=READY_FOR_DELIVERY"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Заказ № " + 1L + " был взят в работу сотрудником Employee и готов к выдаче!"));
+        mockMvc.perform(put("/order/action/{id}", 1L)
+                        .param("employeeName", "Employee")
+                        .param("action", Action.READY_FOR_DELIVERY.toString()))
+                .andExpect(status().isOk());
 
         verify(orderService, times(1)).publishEvent(1L, "Employee", Action.READY_FOR_DELIVERY);
     }
@@ -134,11 +129,10 @@ class OrderControllerTest {
     @Test
     @DisplayName("Передать заказ клиенту через контроллер")
     void issueAnOrder() throws Exception {
-        when(orderService.publishEvent(1L, "Employee", Action.FINISH))
-                .thenReturn("Заказ № " + 1L + " был выдан сотрудником Employee");
-        mockMvc.perform(put("/order/action?orderId=1&employeeName=Employee&action=FINISH"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Заказ № " + 1L + " был выдан сотрудником Employee"));
+        mockMvc.perform(put("/order/action/{id}", 1L)
+                        .param("employeeName", "Employee")
+                        .param("action", Action.FINISH.toString()))
+                .andExpect(status().isOk());
 
         verify(orderService, times(1)).publishEvent(1L, "Employee", Action.FINISH);
     }
@@ -147,7 +141,7 @@ class OrderControllerTest {
     @DisplayName("Получение информации о заказе")
     void shouldReturnCorrectOrderById() throws Exception{
         when(orderService.findOrder(1L)).thenReturn(NEW_ORDER);
-        mockMvc.perform(get("/order/id?id=1"))
+        mockMvc.perform(get("/order/{id}", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("id").value(NEW_ORDER.getId()))
                 .andExpect(jsonPath("product").value(NEW_ORDER.getProduct().toString()))
@@ -160,13 +154,12 @@ class OrderControllerTest {
     @Test
     @DisplayName("Получить информацию о заказе для клиента")
     void shouldReturn200_whenGetOrderInfoForCustomer() throws Exception{
-        when(orderService.getOrderInfoForCustomer(CURRENT_ORDER.getId())).thenReturn("Заказ № " + CURRENT_ORDER.getId() + " для " + CURRENT_ORDER.getCustomer() +"\nСостав заказа: " + CURRENT_ORDER.getProduct().getName()
+        when(orderService.getOrderInfoForCustomer(1L)).thenReturn("Заказ № " + CURRENT_ORDER.getId() + " для " + CURRENT_ORDER.getCustomer() +"\nСостав заказа: " + CURRENT_ORDER.getProduct().getName()
                 + "\nСтоимость: " + CURRENT_ORDER.getProduct().getPrice() + "\nПримерное время получения: "
                 + CURRENT_ORDER.getTimeOfOrderIssue().format(DateTimeFormatter.ofPattern("HH:mm"))
                 + "\nСтатус заказа: " + CURRENT_ORDER.getStatus().getName());
 
-        mockMvc.perform(get("/order/for_customer")
-                        .param("id", CURRENT_ORDER.getId().toString()))
+        mockMvc.perform(get("/order/for_customer/{id}", 1L))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Заказ № " + CURRENT_ORDER.getId() + " для " + CURRENT_ORDER.getCustomer() +"\nСостав заказа: " + CURRENT_ORDER.getProduct().getName()
                         + "\nСтоимость: " + CURRENT_ORDER.getProduct().getPrice() + "\nПримерное время получения: "

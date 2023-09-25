@@ -47,7 +47,7 @@ public class OrderController {
             summary = "Получить информацию о текущем статусе заказа и цепочке событий",
             description = "Введите ID заказа")
     Order getInfoAboutOrderById(@RequestParam Long id) {
-        return orderService.getById(id);
+        return orderService.findOrder(id);
     }
 
     @GetMapping("/all")
@@ -77,7 +77,7 @@ public class OrderController {
     String takeAnOrderToWork(@RequestParam Long orderId,
                              @RequestParam String employeeName,
                              @RequestParam Action action) {
-        return orderService.makeSomeActionWithOrder(orderId, employeeName, action);
+        return orderService.publishEvent(orderId, employeeName, action);
     }
 
     @GetMapping("/for_customer")

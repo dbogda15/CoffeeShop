@@ -90,7 +90,7 @@ class OrderServiceImplTest {
         when(orderRepository.findById(CORRECT_ORDER.getId()))
                 .thenReturn(Optional.of(CORRECT_ORDER));
 
-        assertEquals(CORRECT_ORDER, out.getById(CORRECT_ORDER.getId()));
+        assertEquals(CORRECT_ORDER, out.findOrder(CORRECT_ORDER.getId()));
 
         verify(orderRepository, times(1)).findById(CORRECT_ORDER.getId());
     }
@@ -101,7 +101,7 @@ class OrderServiceImplTest {
         when(orderRepository.findById(CORRECT_ORDER.getId()))
                 .thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> out.getById(CORRECT_ORDER.getId()));
+        assertThrows(NotFoundException.class, () -> out.findOrder(CORRECT_ORDER.getId()));
     }
 
     @Test
@@ -132,7 +132,7 @@ class OrderServiceImplTest {
         when(orderRepository.findById(CURRENT_ORDER.getId()))
                 .thenReturn(Optional.of(CURRENT_ORDER));
 
-        assertEquals(CURRENT_ORDER, out.getById(CURRENT_ORDER.getId()));
+        assertEquals(CURRENT_ORDER, out.findOrder(CURRENT_ORDER.getId()));
 
         verify(orderRepository, times(1)).findById(CURRENT_ORDER.getId());
     }

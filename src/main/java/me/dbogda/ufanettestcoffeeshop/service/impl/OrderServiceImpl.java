@@ -37,7 +37,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order getById(Long id) {
+    public Order findOrder(Long id) {
         Optional<Order> optional = orderRepository.findById(id);
         if (optional.isEmpty()) {
             throw new NotFoundException("Заказ с id = " + id + " не существует!");
@@ -46,8 +46,8 @@ public class OrderServiceImpl implements OrderService {
         }
     }
     @Override
-    public String makeSomeActionWithOrder(Long orderId, String employeeName, Action action){
-        Order order = getById(orderId);
+    public String publishEvent(Long orderId, String employeeName, Action action){
+        Order order = findOrder(orderId);
         return switch (action){
             case TO_WORK -> takeAnOrderToWork(order, employeeName);
             case READY_FOR_DELIVERY -> readyOrderForDelivery(order, employeeName);
@@ -140,7 +140,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public String getOrderInfoForCustomer(Long id) {
-        Order order = getById(id);
+        Order order = findOrder(id);
         return "Заказ № " + id + " для " + order.getCustomer() +"\nСостав заказа: " + order.getProduct().getName()
                 + "\nСтоимость: " + order.getProduct().getPrice() + "\nПримерное время получения: "
                 + order.getTimeOfOrderIssue().format(DateTimeFormatter.ofPattern("HH:mm"))

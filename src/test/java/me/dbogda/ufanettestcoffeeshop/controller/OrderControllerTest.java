@@ -111,42 +111,42 @@ class OrderControllerTest {
     @Test
     @DisplayName("Передать заказ в работу через контроллер")
     void takeAnOrderToWork() throws Exception {
-        when(orderService.makeSomeActionWithOrder(1L, "Employee", Action.TO_WORK)).thenReturn("Заказ № " + 1L + " был взят в работу сотрудником Employee");
+        when(orderService.publishEvent(1L, "Employee", Action.TO_WORK)).thenReturn("Заказ № " + 1L + " был взят в работу сотрудником Employee");
         mockMvc.perform(put("/order/action?orderId=1&employeeName=Employee&action=TO_WORK"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Заказ № " + 1L + " был взят в работу сотрудником Employee"));
 
-        verify(orderService, times(1)).makeSomeActionWithOrder(1L, "Employee", Action.TO_WORK);
+        verify(orderService, times(1)).publishEvent(1L, "Employee", Action.TO_WORK);
     }
 
     @Test
     @DisplayName("Передать заказ в зону выдачи через контроллер")
     void readyOrderForDelivery() throws Exception {
-        when(orderService.makeSomeActionWithOrder(1L, "Employee", Action.READY_FOR_DELIVERY))
+        when(orderService.publishEvent(1L, "Employee", Action.READY_FOR_DELIVERY))
                 .thenReturn("Заказ № " + 1L + " был взят в работу сотрудником Employee и готов к выдаче!");
         mockMvc.perform(put("/order/action?orderId=1&employeeName=Employee&action=READY_FOR_DELIVERY"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Заказ № " + 1L + " был взят в работу сотрудником Employee и готов к выдаче!"));
 
-        verify(orderService, times(1)).makeSomeActionWithOrder(1L, "Employee", Action.READY_FOR_DELIVERY);
+        verify(orderService, times(1)).publishEvent(1L, "Employee", Action.READY_FOR_DELIVERY);
     }
 
     @Test
     @DisplayName("Передать заказ клиенту через контроллер")
     void issueAnOrder() throws Exception {
-        when(orderService.makeSomeActionWithOrder(1L, "Employee", Action.FINISH))
+        when(orderService.publishEvent(1L, "Employee", Action.FINISH))
                 .thenReturn("Заказ № " + 1L + " был выдан сотрудником Employee");
         mockMvc.perform(put("/order/action?orderId=1&employeeName=Employee&action=FINISH"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Заказ № " + 1L + " был выдан сотрудником Employee"));
 
-        verify(orderService, times(1)).makeSomeActionWithOrder(1L, "Employee", Action.FINISH);
+        verify(orderService, times(1)).publishEvent(1L, "Employee", Action.FINISH);
     }
 
     @Test
     @DisplayName("Получение информации о заказе")
     void shouldReturnCorrectOrderById() throws Exception{
-        when(orderService.getById(1L)).thenReturn(NEW_ORDER);
+        when(orderService.findOrder(1L)).thenReturn(NEW_ORDER);
         mockMvc.perform(get("/order/id?id=1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("id").value(NEW_ORDER.getId()))
@@ -154,7 +154,7 @@ class OrderControllerTest {
                 .andExpect(jsonPath("customer").value(NEW_ORDER.getCustomer()))
                 .andExpect(jsonPath("status").value(NEW_ORDER.getStatus().toString()));
 
-        verify(orderService, times(1)).getById(1L);
+        verify(orderService, times(1)).findOrder(1L);
     }
 
     @Test

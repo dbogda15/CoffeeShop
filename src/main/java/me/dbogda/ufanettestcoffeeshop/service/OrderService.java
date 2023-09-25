@@ -10,11 +10,11 @@ public interface OrderService {
 
     String deleteById(Long id);
 
-    Order getById(Long id);
+    Order findOrder(Long id);
 
     List<Order> getAll();
 
-    String makeSomeActionWithOrder(Long orderId, String employeeName, Action action);
+    String publishEvent(Long orderId, String employeeName, Action action);
 
     List<Order> getNewOrders();
 

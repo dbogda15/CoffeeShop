@@ -1,10 +1,12 @@
 package me.dbogda.ufanettestcoffeeshop.service.impl;
 
+import me.dbogda.ufanettestcoffeeshop.enums.Action;
 import me.dbogda.ufanettestcoffeeshop.exception.NonValidStatusException;
 import me.dbogda.ufanettestcoffeeshop.model.Order;
 import me.dbogda.ufanettestcoffeeshop.enums.ProductType;
 import me.dbogda.ufanettestcoffeeshop.enums.Status;
 import me.dbogda.ufanettestcoffeeshop.repository.OrderRepository;
+import me.dbogda.ufanettestcoffeeshop.service.action.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,6 +29,7 @@ class OrderServiceImplTest {
 
     @Mock
     OrderRepository orderRepository;
+    private final List<ActionStrategy> strategyList = List.of(new ToWork(), new Delivery(), new Finish(), new Cancel());
 
     @InjectMocks
     OrderServiceImpl out;
@@ -133,44 +136,6 @@ class OrderServiceImplTest {
         verify(orderRepository, times(1)).findById(CURRENT_ORDER.getId());
     }
 
-    @Test
-    @DisplayName("Принять заказ в работу")
-    void takeAnOrderToWork() {
-        out.takeAnOrderToWork(CORRECT_ORDER, "Employee");
-        verify(orderRepository, times(1)).save(CORRECT_ORDER);
-    }
-
-    @Test
-    @DisplayName("Подготовить заказ к выдаче")
-    void readyOrderForDelivery() {
-        out.readyOrderForDelivery(CURRENT_ORDER, "Employee");
-        verify(orderRepository, times(1)).save(CURRENT_ORDER);
-    }
-
-    @Test
-    @DisplayName("Передать заказ клиенту")
-    void issueAnOrder() {
-        out.issueAnOrder(READY_ORDER, "Employee");
-        verify(orderRepository, times(1)).save(READY_ORDER);
-    }
-
-    @Test
-    @DisplayName("Отменить новый заказ")
-    void cancelTheNewOrder() {
-        out.cancelTheOrder(CORRECT_ORDER, "Employee");
-    }
-
-    @Test
-    @DisplayName("Отменить текущий заказ")
-    void cancelTheCurrentOrder() {
-        out.cancelTheOrder(CURRENT_ORDER, "Employee");
-    }
-
-    @Test
-    @DisplayName("Выбросить исключение при попытке отменить готовый заказ")
-    void throwNonValidStatusExceptionWhenCancelTheReadyOrder() {
-        assertThrows(NonValidStatusException.class, ()-> out.cancelTheOrder(READY_ORDER, "Employee"));
-    }
 
     @Test
     @DisplayName("Получить информацию о заказе для клиента")

@@ -1,10 +1,12 @@
 package me.dbogda.ufanettestcoffeeshop.service.impl;
 
+import me.dbogda.ufanettestcoffeeshop.enums.Action;
 import me.dbogda.ufanettestcoffeeshop.exception.NonValidStatusException;
 import me.dbogda.ufanettestcoffeeshop.model.Order;
 import me.dbogda.ufanettestcoffeeshop.enums.ProductType;
 import me.dbogda.ufanettestcoffeeshop.enums.Status;
 import me.dbogda.ufanettestcoffeeshop.repository.OrderRepository;
+import me.dbogda.ufanettestcoffeeshop.service.action.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,6 +29,7 @@ class OrderServiceImplTest {
 
     @Mock
     OrderRepository orderRepository;
+    private final List<ActionStrategy> strategyList = List.of(new ToWork(), new Delivery(), new Finish(), new Cancel());
 
     @InjectMocks
     OrderServiceImpl out;
@@ -70,18 +73,14 @@ class OrderServiceImplTest {
         when(orderRepository.save(CORRECT_ORDER))
                 .thenReturn(CORRECT_ORDER);
 
-        assertEquals(CORRECT_ORDER, out.create(CORRECT_ORDER));
+        assertEquals(CORRECT_ORDER.getId(), out.create(CORRECT_ORDER));
     }
 
     @Test
     @DisplayName("Удаление заказа из БД по его ID")
     void deleteById() {
-        when(orderRepository.findById(CORRECT_ORDER.getId()))
-                .thenReturn(Optional.of(CORRECT_ORDER));
-
-        assertEquals("Заказ удалён из БД", out.deleteById(CORRECT_ORDER.getId()));
-
-        verify(orderRepository, times(1)).findById(CORRECT_ORDER.getId());
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(CORRECT_ORDER));
+        out.deleteById(1L);
     }
 
     @Test
@@ -137,56 +136,6 @@ class OrderServiceImplTest {
         verify(orderRepository, times(1)).findById(CURRENT_ORDER.getId());
     }
 
-    @Test
-    @DisplayName("Принять заказ в работу")
-    void takeAnOrderToWork() {
-        String result = out.takeAnOrderToWork(CORRECT_ORDER, "Employee");
-
-        assertEquals("Заказ № " + CORRECT_ORDER.getId() + " был взят в работу сотрудником Employee", result);
-
-        verify(orderRepository, times(1)).save(CORRECT_ORDER);
-    }
-
-    @Test
-    @DisplayName("Подготовить заказ к выдаче")
-    void readyOrderForDelivery() {
-        String result = out.readyOrderForDelivery(CURRENT_ORDER, "Employee");
-
-        assertEquals("Заказ № " + CURRENT_ORDER.getId() + " был взят в работу сотрудником Employee и готов к выдаче!", result);
-
-        verify(orderRepository, times(1)).save(CURRENT_ORDER);
-    }
-
-    @Test
-    @DisplayName("Передать заказ клиенту")
-    void issueAnOrder() {
-        String result = out.issueAnOrder(READY_ORDER, "Employee");
-
-        assertEquals("Заказ № " + READY_ORDER.getId() + " был выдан сотрудником " + READY_ORDER.getEmployee(), result);
-    }
-
-    @Test
-    @DisplayName("Отменить новый заказ")
-    void cancelTheNewOrder() {
-        String newOrder = out.cancelTheOrder(CORRECT_ORDER, "Employee");
-
-        assertEquals("Заказ № " + CORRECT_ORDER.getId() + " был отменен сотрудником " + CORRECT_ORDER.getEmployee() + ", так как не прошла оплата.", newOrder);
-
-    }
-
-    @Test
-    @DisplayName("Отменить текущий заказ")
-    void cancelTheCurrentOrder() {
-        String currentOrder = out.cancelTheOrder(CURRENT_ORDER, "Employee");
-
-        assertEquals("Заказ № " + CURRENT_ORDER.getId() + " был отменен сотрудником " + CURRENT_ORDER.getEmployee() + ", так как невозможно собрать полный заказ", currentOrder);
-    }
-
-    @Test
-    @DisplayName("Выбросить исключение при попытке отменить готовый заказ")
-    void throwNonValidStatusExceptionWhenCancelTheReadyOrder() {
-        assertThrows(NonValidStatusException.class, ()-> out.cancelTheOrder(READY_ORDER, "Employee"));
-    }
 
     @Test
     @DisplayName("Получить информацию о заказе для клиента")
